@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GO OUT WITH ME?</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #2e0e29 0%, #0d010d 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    /* Floating Hearts Background */
+    .hearts-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .bg-heart {
+      position: absolute;
+      bottom: -20px;
+      color: rgba(255, 105, 180, 0.25);
+      animation: floatUp 8s linear infinite;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) scale(0.8) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.6;
+      }
+      90% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-105vh) scale(1.2) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Main Container */
+    .card-container {
+      position: relative;
+      z-index: 10;
+      width: 380px;
+      max-width: 90vw;
+      background: rgba(35, 15, 35, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 182, 193, 0.2);
+      border-radius: 32px;
+      padding: 36px 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6),
+                  inset 0 1px 1px rgba(255, 255, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Bears Illustration */
+    .illustration {
+      width: 210px;
+      height: 170px;
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .hearts-group {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    .mini-heart {
+      font-size: 22px;
+      animation: heartbeat 1.4s infinite ease-in-out alternate;
+      filter: drop-shadow(0 0 6px rgba(255, 105, 180, 0.6));
+    }
+    .mini-heart:nth-child(2) {
+      animation-delay: 0.25s;
+      font-size: 28px;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.3) rotate(8deg); }
+    }
+
+    .bears-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Typography */
+    h1.title {
+      font-family: 'Dancing Script', 'Brush Script MT', 'Georgia', cursive, serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: #ffffff;
+      text-shadow: 0 0 15px rgba(255, 182, 193, 0.4);
+      line-height: 1.2;
+    }
+
+    .screen-title {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      color: #ffb6c1;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(255, 94, 151, 0.4);
+    }
+
+    /* Buttons Group */
+    .buttons-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      width: 100%;
+      position: relative;
+      min-height: 100px;
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s, box-shadow 0.3s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn-no {
+      background: rgba(90, 30, 60, 0.6);
+      color: #f1c5d8;
+      border: 1px solid rgba(255, 150, 200, 0.3);
+      padding: 12px 28px;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+    }
+
+    .btn-yes {
+      background: linear-gradient(135deg, #ff5e97 0%, #ff2a6d 100%);
+      color: #ffffff;
+      padding: 12px 35px;
+      font-size: 1.1rem;
+      box-shadow: 0 8px 25px rgba(255, 42, 109, 0.5),
+                  0 0 15px rgba(255, 94, 151, 0.4);
+      z-index: 2;
+    }
+
+    .btn-yes:hover {
+      transform: scale(1.08);
+      box-shadow: 0 10px 30px rgba(255, 42, 109, 0.7);
+    }
+
+    /* Screens */
+    .screen {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .option-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      padding: 13px 18px;
+      color: #fff;
+      font-size: 0.98rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .option-btn:hover {
+      background: rgba(255, 94, 151, 0.25);
+      border-color: #ff5e97;
+      transform: translateY(-2px);
+    }
+
+    .next-btn {
+      margin-top: 20px;
+      background: linear-gradient(135deg, #ff5e97 0%, #ff2a6d 100%);
+      color: #fff;
+      padding: 12px 35px;
+      border-radius: 50px;
+      font-weight: 600;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(255, 42, 109, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .next-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Final Summary Box */
+    .summary-card {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px dashed rgba(255, 182, 193, 0.4);
+      border-radius: 20px;
+      padding: 20px;
+      width: 100%;
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    .summary-item {
+      font-size: 1.1rem;
+      margin: 10px 0;
+      color: #ffe0eb;
+    }
+
+    .summary-item span {
+      font-weight: bold;
+      color: #ff5e97;
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <canvas id="confetti-canvas"></canvas>
+  <div class="hearts-container" id="hearts-bg"></div>
+
+  <div class="card-container">
+    
+    <!-- STEP 1: Main Question -->
+    <div class="screen active" id="screen-1">
+      <div class="illustration">
+        <div class="hearts-group">
+          <span class="mini-heart">💖</span>
+          <span class="mini-heart">💗</span>
+          <span class="mini-heart">💕</span>
+        </div>
+        <!-- Super Cute Chubby Hugging Bears SVG -->
+        <svg class="bears-svg" viewBox="0 0 220 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Glow filter behind bears -->
+          <defs>
+            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="6" result="blur" />
+              <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+          </defs>
+
+          <!-- White Bear (Milk - Left) -->
+          <g transform="translate(15, 15)">
+            <!-- Ears -->
+            <circle cx="32" cy="22" r="13" fill="#ffffff"/>
+            <circle cx="32" cy="22" r="7" fill="#ffccd5"/>
+            <circle cx="82" cy="22" r="13" fill="#ffffff"/>
+            <circle cx="82" cy="22" r="7" fill="#ffccd5"/>
+            <!-- Body -->
+            <path d="M 22 55 Q 15 95 35 125 Q 57 135 77 125 Q 97 95 92 55 Z" fill="#ffffff"/>
+            <!-- Head -->
+            <circle cx="57" cy="50" r="36" fill="#ffffff"/>
+            <!-- Happy Closed Eyes (Happy Arcs) -->
+            <path d="M 44 45 Q 49 39 53 46" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <path d="M 61 46 Q 65 39 70 45" stroke="#2b2b2b" stroke-width="3" stroke-linecap="round" fill="none"/>
+            <!-- Rosy Cheeks -->
+            <ellipse cx="40" cy="53" rx="7" ry="4" fill="#ff99b3" opacity="0.7"/>
+            <ellipse cx="74" cy="53" rx="7" ry="4" fill="#ff99b3" opacity="0.7"/>
+            <!-- Cute Nose & Mouth -->
+            <ellipse cx="57" cy="54" rx="4.5" ry="3.2" fill="#2b2b2b"/>
+            <path d="M 53 58 Q 57 62 61 58" stroke="#2b2b2b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <!-- Arms hugging brown bear -->
+            <path d="M 75 75 Q 115 70 120 85 Q 125 100 100 105" stroke="#ffffff" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="114" cy="85" r="7" fill="#ffffff"/>
+          </g>
+
+          <!-- Brown Bear (Mocha - Right) -->
+          <g transform="translate(95, 20)">
+            <!-- Ears -->
+            <circle cx="28" cy="20" r="13" fill="#a47551"/>
+            <circle cx="28" cy="20" r="7" fill="#d7b899"/>
+            <circle cx="78" cy="20" r="13" fill="#a47551"/>
+            <circle cx="78" cy="20" r="7" fill="#d7b899"/>
+            <!-- Body -->
+            <path d="M 18 55 Q 12 92 32 120 Q 53 130 73 120 Q 93 92 88 55 Z" fill="#b8845c"/>
+            <!-- Head -->
+            <circle cx="53" cy="50" r="36" fill="#b8845c"/>
+            <!-- Snout -->
+            <ellipse cx="53" cy="56" rx="13" ry="10" fill="#e8d0b3"/>
+            <!-- Nose & Smile -->
+            <ellipse cx="53" cy="52" rx="4.5" ry="3" fill="#3d2314"/>
+            <path d="M 49 57 Q 53 61 57 57" stroke="#3d2314" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <!-- Shy / Blushing Eyes -->
+            <circle cx="39" cy="45" r="3.5" fill="#3d2314"/>
+            <circle cx="67" cy="45" r="3.5" fill="#3d2314"/>
+            <!-- Rosy Cheeks -->
+            <ellipse cx="34" cy="52" rx="6" ry="3.5" fill="#ff8da1" opacity="0.7"/>
+            <ellipse cx="72" cy="52" rx="6" ry="3.5" fill="#ff8da1" opacity="0.7"/>
+            <!-- Shy sweat drop -->
+            <path d="M 73 32 Q 77 38 75 41 A 2.2 2.2 0 0 1 70 38 Q 71 35 73 32" fill="#70c5ff"/>
+          </g>
+        </svg>
+      </div>
+
+      <h1 class="title">Will you go out with me?</h1>
+
+      <div class="buttons-wrapper" id="btn-wrapper">
+        <button class="btn btn-no" id="no-btn">No 💔</button>
+        <button class="btn btn-yes" id="yes-btn">Yes! 💖</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: Choose Date -->
+    <div class="screen" id="screen-2">
+      <h2 class="screen-title">📅 When are you free?</h2>
+      <div class="options-grid">
+        <button class="option-btn" onclick="chooseDate('Friday 🗓️')">Friday <span>❤️</span></button>
+        <button class="option-btn" onclick="chooseDate('Saturday 🗓️')">Saturday <span>✨</span></button>
+        <button class="option-btn" onclick="chooseDate('Sunday 🗓️')">Sunday <span>🌸</span></button>
+        <button class="option-btn" onclick="chooseDate('Any day you want 🥰')">Any day with you! <span>🥰</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 3: Choose Location -->
+    <div class="screen" id="screen-3">
+      <h2 class="screen-title">📍 Where are we going?</h2>
+      <div class="options-grid">
+        <button class="option-btn" onclick="choosePlace('☕ Cute Café & Pastries')">Cute Café & Drinks <span>☕</span></button>
+        <button class="option-btn" onclick="choosePlace('🎬 Movie Night / Cinema')">Movie Night <span>🎬</span></button>
+        <button class="option-btn" onclick="choosePlace('🌳 Sunset Walk & Ice Cream')">Sunset Walk & Ice Cream <span>🍦</span></button>
+        <button class="option-btn" onclick="choosePlace('🕹️ Fun Arcade & Games')">Arcade & Games <span>🕹️</span></button>
+        <button class="option-btn" onclick="choosePlace('✨ Surprise Me!')">Surprise Me! <span>🎁</span></button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Confirmation / Celebration -->
+    <div class="screen" id="screen-4">
+      <h2 class="screen-title">Yay! It's a Date! 🎉</h2>
+      
+      <div class="summary-card">
+        <div class="summary-item">🗓️ When: <span id="res-date">-</span></div>
+        <div class="summary-item">📍 Where: <span id="res-place">-</span></div>
+      </div>
+
+      <p style="color: #f1c5d8; font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px;">
+        Can't wait to spend this sweet time with you! 💕✨
+      </p>
+
+      <button class="next-btn" onclick="location.reload()">Replay 💖</button>
+    </div>
+
+  </div>
+
+  <script>
+    // 1. Generate Floating Background Hearts
+    const heartsContainer = document.getElementById('hearts-bg');
+    const heartSymbols = ['♥', '💖', '💕', '💗', '💓'];
+    
+    for (let i = 0; i < 22; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'bg-heart';
+      heart.innerText = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+      heart.style.left = Math.random() * 100 + '%';
+      heart.style.animationDelay = (Math.random() * 8) + 's';
+      heart.style.animationDuration = (6 + Math.random() * 6) + 's';
+      heart.style.fontSize = (14 + Math.random() * 20) + 'px';
+      heartsContainer.appendChild(heart);
+    }
+
+    // 2. Dodging "No" -> "Are you sure?" Button Logic
+    const noBtn = document.getElementById('no-btn');
+    const yesBtn = document.getElementById('yes-btn');
+
+    let dodges = 0;
+    const lines = [
+      "Are you sure?",
+      "Really sure?",
+      "Think again! 🥺",
+      "Don't do this!",
+      "Last chance!",
+      "Surely not? 💔"
+    ];
+
+    function moveNoBtn() {
+      dodges++;
+      noBtn.innerText = lines[Math.min(dodges - 1, lines.length - 1)];
+
+      const currentScale = 1 + (dodges * 0.15);
+      yesBtn.style.transform = `scale(${currentScale})`;
+
+      const shrink = Math.max(0.55, 1 - (dodges * 0.08));
+      const randomX = (Math.random() - 0.5) * 180;
+      const randomY = (Math.random() - 0.5) * 90;
+
+      noBtn.style.transform = `translate(${randomX}px, ${randomY}px) scale(${shrink})`;
+    }
+
+    noBtn.addEventListener('mouseenter', moveNoBtn);
+    noBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      moveNoBtn();
+    });
+    noBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      moveNoBtn();
+    });
+
+    // Navigation & Data State
+    let selectedDate = "";
+    let selectedPlace = "";
+
+    yesBtn.addEventListener('click', () => {
+      triggerConfetti();
+      goToScreen('screen-2');
+    });
+
+    function chooseDate(dateVal) {
+      selectedDate = dateVal;
+      triggerConfetti();
+      goToScreen('screen-3');
+    }
+
+    function choosePlace(placeVal) {
+      selectedPlace = placeVal;
+      triggerConfetti();
+      
+      document.getElementById('res-date').innerText = selectedDate;
+      document.getElementById('res-place').innerText = selectedPlace;
+      
+      goToScreen('screen-4');
+    }
+
+    function goToScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // 3. Confetti Animation
+    function triggerConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#ff5e97', '#ff2a6d', '#ffffff', '#ffb6c1', '#ffd1dc'];
+
+      for (let i = 0; i < 90; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 12,
+          vy: (Math.random() - 0.5) * 12 - 3,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 1,
+          rotation: Math.random() * 360
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        let active = false;
+
+        particles.forEach(p => {
+          if (p.alpha > 0) {
+            active = true;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.2;
+            p.alpha -= 0.015;
+
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+            ctx.restore();
+          }
+        });
+
+        if (active) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      animate();
+    }
+  </script>
+</body>
+</html>
